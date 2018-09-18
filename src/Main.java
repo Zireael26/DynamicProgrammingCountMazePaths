@@ -27,6 +27,11 @@ public class Main {
         System.out.println(countMazePathTabulated(n, n));
         long endTab = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTab - startTab) + "ms");
+
+        startTab = System.currentTimeMillis();
+        System.out.println(countMazePathSlider(n, n));
+        endTab = System.currentTimeMillis();
+        System.out.println("Time taken: " + (endTab - startTab) + "ms");
     }
 
     public static void printMazePathsProactive(int srcX, int srcY, int destX, int destY, String pathSoFar) {
@@ -116,9 +121,9 @@ public class Main {
                 if (x == destX && y == destY) {  // last cell
                     f[x][y] = 1;
                 } else if (x == destX) {         // last row, except last cell
-                    f[x][y] += f[x][y+1];
+                    f[x][y] += f[x][y + 1];
                 } else if (y == destY) {         // last column, except last cell
-                    f[x][y] += f[x+1][y];
+                    f[x][y] += f[x + 1][y];
                 } else {                         // any other row/column
                     f[x][y] += f[x + 1][y] + f[x][y + 1];
                 }
@@ -126,5 +131,20 @@ public class Main {
         }
 
         return f[0][0];
+    }
+
+    public static int countMazePathSlider(int destX, int destY) {
+        int[] rowSlider = new int[destX + 1]; // a slider array, size being same as one row of the maze,
+        // the whole slider slides upward, row wise
+        rowSlider[destX] = 1; // given : paths from (n, n) to (n, n) are 1
+
+        for (int row = destY; row >= 0; row--) {
+            for (int i = destX - 1; i >= 0; i--) { // we update rowSlider[destX] by just sliding it upwards
+                rowSlider[i] = rowSlider[i] + rowSlider[i+1]; // we update rowSlider[i] as sum of rowSlider[i+1]
+                                                              // and old value of rowSlider[i]
+            }
+        }
+        // the final result will be in rowSlider[0] after it is done updating
+        return rowSlider[0];
     }
 }
